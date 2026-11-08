@@ -20,6 +20,7 @@ public final class AssetTest {
         };
         logger.addHandler(capture);
         try {
+
             AssetManager assets = new AssetManager();
             ImageIcon original = assets.getIcon("character.default", 96, 96);
             check(original.getIconWidth() == 96 && original.getIconHeight() == 96, "classpath icon scaled");
