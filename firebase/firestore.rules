@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The game client uses Firebase Auth and the Cloud Run API. Ranked state is
+    // mutated exclusively by the Cloud Run service account through Admin SDK.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

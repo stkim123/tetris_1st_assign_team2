@@ -1,0 +1,10 @@
+# Explicit build allowlist: never upload credentials, exports, or local tools.
+*
+!Dockerfile.cloudrun
+!cloudbuild.yaml
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/**
+!src/
+!src/**

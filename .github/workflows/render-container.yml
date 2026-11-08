@@ -1,0 +1,57 @@
+name: Validate Render container
+
+on:
+  push:
+    branches: [eunjin]
+    paths:
+      - '.github/workflows/render-container.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.mvn/**'
+      - 'mvnw'
+      - 'pom.xml'
+      - 'src/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-container-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  linux-container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Build Docker image and run all headless suites
+        run: docker build --progress=plain --tag tetris-ranked:ci .
+      - name: Verify the production container entry point
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'docker logs tetris-smoke; docker rm -f tetris-smoke >/dev/null' EXIT
+          docker run --detach --name tetris-smoke \
+            --publish 127.0.0.1:10000:10000 \
+            --env PORT=10000 \
+            --env SUPABASE_URL=http://127.0.0.1:1 \
+            --env SUPABASE_PUBLISHABLE_KEY=ci-public-placeholder \
+            --env SUPABASE_SECRET_KEY=ci-secret-placeholder \
+            --env RENDER_ADMIN_TOKEN=ci-admin-placeholder-at-least-24-characters \
+            --env TETRIS_MAX_WS_CONNECTIONS=2 \
+            --env TETRIS_MAX_PENDING_AUTH=1 \
+            tetris-ranked:ci
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 \
+            --retry-connrefused --retry-all-errors --max-time 2 http://127.0.0.1:10000/healthz
+          test "$(docker exec tetris-smoke id -u)" = 10001
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            http://127.0.0.1:10000/admin/status)" = 401
+          status=$(curl --fail --silent --show-error \
+            --header 'Authorization: Bearer ci-admin-placeholder-at-least-24-characters' \
+            http://127.0.0.1:10000/admin/status)
+          [[ "$status" == *"admission=false"* ]]
+          [[ "$status" == *"unresolved=0"* ]]
+          echo 'PASS Linux container health, non-root user, closed admission and protected admin'

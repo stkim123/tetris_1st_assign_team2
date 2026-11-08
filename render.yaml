@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: tetris-ranked-pvp
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: RENDER_ADMIN_TOKEN
+        generateValue: true
+      - key: TETRIS_MAX_WS_CONNECTIONS
+        value: "128"
+      - key: TETRIS_MAX_PENDING_AUTH
+        value: "16"

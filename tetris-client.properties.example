@@ -1,0 +1,15 @@
+# Optional override: bundled defaults already connect to the production service.
+# For another Firebase service, edit these four public values, then copy this
+# file to tetris-client.properties beside the launcher. Never include secrets.
+online.provider=firebase
+server.url=wss://YOUR_CLOUD_RUN_SERVICE.run.app/ws
+firebase.projectId=YOUR_FIREBASE_PROJECT_ID
+firebase.apiKey=YOUR_PUBLIC_FIREBASE_WEB_API_KEY
+
+# For a legacy Supabase service, replace all four lines above with:
+# online.provider=supabase
+# server.url=wss://YOUR_SERVICE.onrender.com/ws
+# supabase.url=https://YOUR_PROJECT.supabase.co
+# supabase.publishableKey=sb_publishable_REPLACE_ME
+# Emulator-only testing may additionally set firebase.authEmulatorUrl and
+# firebase.tokenEmulatorUrl to HTTP loopback URLs ending in /v1/.

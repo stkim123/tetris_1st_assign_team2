@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "ranked_matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "serverRunId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "ranked_players",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ranked", "order": "ASCENDING" },
+        { "fieldPath": "rating", "order": "DESCENDING" },
+        { "fieldPath": "userId", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
